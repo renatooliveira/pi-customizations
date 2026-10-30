@@ -7,8 +7,8 @@ Personal [Pi](https://github.com/earendil-works/pi) extensions and skills.
 | Extension | Purpose |
 | --- | --- |
 | [`compact-shell.ts`](extensions/compact-shell.ts) | Compact status for agent-run bash/PowerShell and codemode calls; expand with Ctrl+O for full output. |
-
 | [`profile-banner.ts`](extensions/profile-banner.ts) | Persistent profile banner above the editor: purple for work, blue for personal. |
+| [`notify.ts`](extensions/notify.ts) | Native macOS notifications when Pi settles, including in Rio. |
 
 ### Compact shell
 
@@ -60,6 +60,14 @@ PI_CODING_AGENT_DIR="$HOME/.pi/agent-work" pi
 Each profile has its own settings and authentication. Configure `/login` separately as needed. The banner reads the active agent directory, not the working directory or selected model. To switch profiles, exit Pi and launch it with the other directory.
 
 Run `/reload` after adding the extension to the active profile's settings. If the banner is missing, check that you edited that profile's `settings.json`. A gray **DEFAULT** banner means Pi is using the standard `agent` directory; other unrecognized directory names are shown in uppercase and gray.
+
+### Desktop notifications (Rio / macOS)
+
+`extensions/notify.ts` uses macOS `osascript` directly, so it does not depend on Rio supporting terminal notification escape sequences. Add its absolute path to the active profile's `settings.json` `extensions` array, just like the other extensions; no copying or additional package is needed. Run `/reload`, then `/notify-test` to check delivery.
+
+After Pi finishes its run and automatic continuations settle, it sends **Pi · PROFILE · project-folder** with **Ready for your next message.** This means Pi has stopped, not that the task necessarily succeeded. It also covers responses that end with a question, but does **not** detect mid-task confirmation dialogs or input prompts.
+
+Notifications contain no response text, request no sound, and are sent even while you are watching Pi. macOS notification permissions and Focus settings determine whether they appear; check System Settings → Notifications if the test is not visible. Click behavior is controlled by macOS: the notification's **Show** action may open a folder instead of returning to Rio. This extension intentionally keeps the built-in `osascript` approach, with no click-to-focus helper or `terminal-notifier` dependency. Non-interactive runs do not send notifications; other operating systems are not supported.
 
 ## Skills
 
