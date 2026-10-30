@@ -8,28 +8,58 @@ Personal [Pi](https://github.com/earendil-works/pi) extensions and skills.
 | --- | --- |
 | [`compact-shell.ts`](extensions/compact-shell.ts) | Compact status for agent-run bash/PowerShell and codemode calls; expand with Ctrl+O for full output. |
 
-Install the extension locally:
+| [`profile-banner.ts`](extensions/profile-banner.ts) | Persistent profile banner above the editor: purple for work, blue for personal. |
 
-```bash
-mkdir -p ~/.pi/agent/extensions
-cp extensions/compact-shell.ts ~/.pi/agent/extensions/
-```
+### Compact shell
 
-Because the extension supplies a customized codemode tool, disable Pi's separate built-in codemode registration in `~/.pi/agent/settings.json` to avoid a duplicate-tool warning (do **not** disable the `codemode` tool itself):
+Load the extension directly from this checkout—no copying required. Add its absolute path to `extensions` in your active profile's `settings.json` (`~/.pi/agent/settings.json` by default). Replace `/Users/YOUR_USER` below with your home directory.
+
+Because the extension supplies a customized codemode tool, also disable Pi's separate built-in codemode registration to avoid a duplicate-tool warning (do **not** disable the `codemode` tool itself):
 
 ```json
 {
-  "extensions": ["-builtin:codemode"]
+  "extensions": [
+    "-builtin:codemode",
+    "/Users/YOUR_USER/projects/personal/pi-customizations/extensions/compact-shell.ts"
+  ]
 }
 ```
 
-Merge that entry with any existing `extensions` setting. Run `/reload` in Pi (or restart it). This changes only the display of agent-run shell tools and codemode scripts. Collapsed codemode rows show the script's first code line, status, and nested tool names (with an error count if any nested call failed). Expanded rows retain Pi's full script, nested calls, and output. Commands entered directly in Pi and other tools, including edit diffs, are unaffected.
+Merge these entries with any existing `extensions` setting. If you previously copied the extension into the profile's `extensions/` directory, remove that copy to avoid loading it twice. Run `/reload` in Pi (or restart it); future checkout updates also take effect after `/reload`. This changes only the display of agent-run shell tools and codemode scripts. Collapsed codemode rows show the script's first code line, status, and nested tool names (with an error count if any nested call failed). Expanded rows retain Pi's full script, nested calls, and output. Commands entered directly in Pi and other tools, including edit diffs, are unaffected.
 
 ### Profile banner
 
 `extensions/profile-banner.ts` adds a persistent **PI PROFILE** banner above the editor. It uses Pi's active agent directory (`PI_CODING_AGENT_DIR`): `agent-work` is purple, `agent-personal` is blue. Other directory names appear in gray; the standard `agent` directory is labeled **DEFAULT** rather than guessing an account.
 
-Add the absolute path to `extensions/profile-banner.ts` to the `extensions` array in each profile's `settings.json`, then run `/reload`. This shows the Pi profile, not the provider login or email. It does not change the header, footer, or shell rendering.
+This shows the Pi profile, **not** the provider login or email. It does not change the header, footer, or shell rendering and is inactive in non-interactive modes.
+
+#### Install for each profile
+
+Add the extension's absolute path to the `extensions` array in both `~/.pi/agent-personal/settings.json` and `~/.pi/agent-work/settings.json`. For a checkout at `~/projects/personal/pi-customizations`, replace `/Users/YOUR_USER` below with your home directory:
+
+```json
+{
+  "extensions": [
+    "/Users/YOUR_USER/projects/personal/pi-customizations/extensions/profile-banner.ts"
+  ]
+}
+```
+
+Merge this entry with existing settings; do not replace other extensions. The banner works independently of compact shell and does not require disabling any built-in extension. Loading directly from the checkout means updates take effect after `/reload` without copying files.
+
+#### Start a profile
+
+```bash
+# Blue PERSONAL banner
+PI_CODING_AGENT_DIR="$HOME/.pi/agent-personal" pi
+
+# Purple WORK banner
+PI_CODING_AGENT_DIR="$HOME/.pi/agent-work" pi
+```
+
+Each profile has its own settings and authentication. Configure `/login` separately as needed. The banner reads the active agent directory, not the working directory or selected model. To switch profiles, exit Pi and launch it with the other directory.
+
+Run `/reload` after adding the extension to the active profile's settings. If the banner is missing, check that you edited that profile's `settings.json`. A gray **DEFAULT** banner means Pi is using the standard `agent` directory; other unrecognized directory names are shown in uppercase and gray.
 
 ## Skills
 
